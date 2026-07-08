@@ -3,6 +3,31 @@
     "expandedProjectPaths": [
     ],
     "fileStates": {
+        "Level-01.tmx": {
+            "expandedObjectLayers": [
+                2
+            ],
+            "scale": 0.8939,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 308.75936905694147,
+                "y": 244.99384718648622
+            }
+        },
+        "Level-02.tmx": {
+            "expandedObjectLayers": [
+                2
+            ],
+            "scale": 0.768,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 320.3125,
+                "y": 316.40625
+            }
+        },
+        "Pixel Adventure.tsx": {
+            "scaleInEditor": 1
+        }
     },
     "last.imagePath": "/Users/legion/Documents/GitHub/pixel_adventure/assets/images/Terrain",
     "map.height": 23,
@@ -14,6 +39,7 @@
     ],
     "project": "Pixel Adventure.tiled-project",
     "recentFiles": [
+        "Pixel Adventure.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
