@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flame/components.dart';
 import 'package:flutter/services.dart';
+import 'package:pixel_adventure/components/collision_block.dart';
+import 'package:pixel_adventure/components/utils.dart';
 import 'package:pixel_adventure/pixel_adventure.dart';
 
 enum PlayerState { idle, running }
@@ -16,13 +18,23 @@ class Player extends SpriteAnimationGroupComponent
   late final SpriteAnimation runningAnimation;
   final double stepTime = 0.05;
 
+  double _gravity = 9.6;
+  double _jumpForce = 260;
+  double _terminalVelocity = 300;
+
   double horizontalMovement = 0;
   double moveSpeed = 100;
   Vector2 velocity = Vector2.zero();
   bool isFacingRight = true;
 
+  bool isOnGround = false;
+  bool hasJumped = false;
+
+  List<CollisionBlock> collisionsBlock = [];
+
   @override
   FutureOr<void> onLoad() {
+    debugMode = true;
     _loadAllAnimation();
     return super.onLoad();
   }
@@ -31,6 +43,9 @@ class Player extends SpriteAnimationGroupComponent
   void update(double dt) {
     _updatePlayerState();
     _updatePlayerMovement(dt);
+    _checkHorizontalCollisions();
+    _applyGravity(dt);
+    _checkVerticleCollisions();
     super.update(dt);
   }
 
@@ -47,6 +62,8 @@ class Player extends SpriteAnimationGroupComponent
 
     horizontalMovement += isLeftKeyPressed ? -1 : 0;
     horizontalMovement += isRightKeyPressed ? 1 : 0;
+
+    hasJumped = keysPressed.contains(LogicalKeyboardKey.space);
 
     return super.onKeyEvent(event, keysPressed);
   }
@@ -91,7 +108,69 @@ class Player extends SpriteAnimationGroupComponent
   }
 
   void _updatePlayerMovement(double dt) {
+    if (hasJumped && isOnGround) _playerJumped(dt);
+
     velocity.x = horizontalMovement * moveSpeed;
     position.x += velocity.x * dt;
+  }
+
+  void _playerJumped(double dt) {
+    velocity.y = -_jumpForce;
+    position.y += velocity.y * dt;
+    isOnGround = false;
+    hasJumped = false;
+  }
+
+  void _checkHorizontalCollisions() {
+    for (var block in collisionsBlock) {
+      if (!block.isPlatform) {
+        if (checkCollision(this, block)) {
+          if (velocity.x > 0) {
+            velocity.x = 0;
+            position.x = block.x - width;
+            break;
+          }
+          if (velocity.x < 0) {
+            velocity.x = 0;
+            position.x = block.x + block.width + width;
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  void _applyGravity(double dt) {
+    velocity.y += _gravity;
+    velocity.y = velocity.y.clamp(-_jumpForce, _terminalVelocity);
+    position.y += velocity.y * dt;
+  }
+
+  void _checkVerticleCollisions() {
+    for (var block in collisionsBlock) {
+      if (block.isPlatform) {
+        if (checkCollision(this, block)) {
+          if (velocity.y > 0) {
+            velocity.y = 0;
+            position.y = block.y - width;
+            isOnGround = true;
+            break;
+          }
+        }
+      } else {
+        if (checkCollision(this, block)) {
+          if (velocity.y > 0) {
+            velocity.y = 0;
+            position.y = block.y - width;
+            isOnGround = true;
+            break;
+          }
+          if (velocity.y < 0) {
+            velocity.y = 0;
+            position.y = block.y + block.width;
+          }
+        }
+      }
+    }
   }
 }
