@@ -4,17 +4,18 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/services.dart';
 import 'package:pixel_adventure/components/collision_block.dart';
-import 'package:pixel_adventure/components/player_hitbox.dart';
+import 'package:pixel_adventure/components/custom_hitbox.dart';
+import 'package:pixel_adventure/components/fruit.dart';
 import 'package:pixel_adventure/components/utils.dart';
 import 'package:pixel_adventure/pixel_adventure.dart';
 
 enum PlayerState { idle, running, falling, jumping }
 
 class Player extends SpriteAnimationGroupComponent
-    with HasGameReference<PixelAdventure>, KeyboardHandler {
+    with HasGameReference<PixelAdventure>, KeyboardHandler, CollisionCallbacks {
   final String character;
 
-  Player({position, this.character = 'Ninja Frog'}) : super(position: position);
+  Player({super.position, this.character = 'Ninja Frog'});
 
   late final SpriteAnimation idleAnimation;
   late final SpriteAnimation runningAnimation;
@@ -37,7 +38,7 @@ class Player extends SpriteAnimationGroupComponent
 
   List<CollisionBlock> collisionsBlock = [];
 
-  PlayerHitbox hitbox = PlayerHitbox(
+  CustomHitbox hitbox = CustomHitbox(
     offsetX: 10,
     offsetY: 4,
     width: 14,
@@ -65,6 +66,12 @@ class Player extends SpriteAnimationGroupComponent
     _applyGravity(dt);
     _checkVerticleCollisions();
     super.update(dt);
+  }
+
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    if (other is Fruit) other.coollidedWithPlayer();
+    super.onCollision(intersectionPoints, other);
   }
 
   @override
