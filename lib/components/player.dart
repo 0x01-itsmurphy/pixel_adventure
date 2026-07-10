@@ -48,7 +48,7 @@ class Player extends SpriteAnimationGroupComponent
   @override
   FutureOr<void> onLoad() {
     _loadAllAnimation();
-    // debugMode = true;
+
     add(
       RectangleHitbox(
         position: Vector2(hitbox.offsetX, hitbox.offsetY),
@@ -71,6 +71,7 @@ class Player extends SpriteAnimationGroupComponent
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     if (other is Fruit) other.coollidedWithPlayer();
+
     super.onCollision(intersectionPoints, other);
   }
 

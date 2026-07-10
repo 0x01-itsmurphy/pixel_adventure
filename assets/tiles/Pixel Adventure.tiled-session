@@ -38,6 +38,7 @@
     "openFiles": [
     ],
     "project": "Pixel Adventure.tiled-project",
+    "property.type": "float",
     "recentFiles": [
         "Pixel Adventure.tsx"
     ],
