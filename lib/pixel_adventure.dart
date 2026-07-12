@@ -4,18 +4,25 @@ import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
 import 'package:flutter/painting.dart';
+import 'package:pixel_adventure/components/jump_button.dart';
 import 'package:pixel_adventure/components/level.dart';
 import 'package:pixel_adventure/components/player.dart';
 
 class PixelAdventure extends FlameGame
-    with HasKeyboardHandlerComponents, DragCallbacks, HasCollisionDetection {
+    with
+        HasKeyboardHandlerComponents,
+        DragCallbacks,
+        HasCollisionDetection,
+        TapCallbacks {
   @override
   Color backgroundColor() => Color(0xff211f30);
 
   late CameraComponent cameraComponent;
   Player player = Player(character: 'Mask Dude');
   late JoystickComponent joystick;
-  bool showJoystick = false;
+  bool joystickReady = false;
+
+  bool showControls = true;
 
   List<String> levelsName = ['Level-01', 'Level-01'];
   int currentLevelIndex = 0;
@@ -25,10 +32,6 @@ class PixelAdventure extends FlameGame
     await images.loadAllImages();
 
     _loadLevel();
-
-    if (showJoystick) {
-      addJoystick();
-    }
 
     return super.onLoad();
   }
@@ -48,6 +51,10 @@ class PixelAdventure extends FlameGame
       cameraComponent.viewfinder.anchor = Anchor.topLeft;
 
       addAll([cameraComponent, world]);
+
+      if (showControls) {
+        addJoystick();
+      }
     });
   }
 
@@ -64,7 +71,7 @@ class PixelAdventure extends FlameGame
 
   @override
   void update(double dt) {
-    if (showJoystick) {
+    if (showControls && joystickReady) {
       updateJoystick();
     }
     super.update(dt);
@@ -72,15 +79,16 @@ class PixelAdventure extends FlameGame
 
   void addJoystick() {
     joystick = JoystickComponent(
+      priority: 10,
       knob: SpriteComponent(sprite: Sprite(images.fromCache('HUD/Knob.png'))),
       background: SpriteComponent(
         sprite: Sprite(images.fromCache('HUD/Joystick.png')),
       ),
       margin: const EdgeInsets.only(left: 32, bottom: 32),
     );
+    joystickReady = true;
 
-    // add(joystick);
-    cameraComponent.viewport.add(joystick);
+    cameraComponent.viewport.addAll([joystick, JumpButton()]);
   }
 
   void updateJoystick() {
