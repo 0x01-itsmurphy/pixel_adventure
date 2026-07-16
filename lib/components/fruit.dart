@@ -10,7 +10,6 @@ class Fruit extends SpriteAnimationComponent
   final String fruit;
   Fruit({super.position, super.size, this.fruit = "Apple"});
 
-  bool _collected = false;
   final double stepTime = 0.05;
   final hitbox = CustomHitbox(offsetX: 10, offsetY: 10, width: 12, height: 12);
 
@@ -35,19 +34,18 @@ class Fruit extends SpriteAnimationComponent
     return super.onLoad();
   }
 
-  void coollidedWithPlayer() {
-    if (!_collected) {
-      animation = SpriteAnimation.fromFrameData(
-        game.images.fromCache('Items/Fruits/Collected.png'),
-        SpriteAnimationData.sequenced(
-          amount: 6,
-          stepTime: stepTime,
-          textureSize: Vector2.all(32),
-        ),
-      );
-      _collected = true;
-    }
+  void coollidedWithPlayer() async {
+    animation = SpriteAnimation.fromFrameData(
+      game.images.fromCache('Items/Fruits/Collected.png'),
+      SpriteAnimationData.sequenced(
+        amount: 6,
+        stepTime: stepTime,
+        textureSize: Vector2.all(32),
+        loop: false,
+      ),
+    );
 
-    Future.delayed(const Duration(milliseconds: 400), () => removeFromParent());
+    await animationTicker?.completed;
+    removeFromParent();
   }
 }
