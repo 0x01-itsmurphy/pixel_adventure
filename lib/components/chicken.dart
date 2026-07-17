@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'dart:ui';
 
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:pixel_adventure/pixel_adventure.dart';
 
 import 'player.dart';
@@ -9,7 +11,7 @@ import 'player.dart';
 enum ChickenState { idle, hit, run }
 
 class Chicken extends SpriteAnimationGroupComponent
-    with HasGameReference<PixelAdventure> {
+    with HasGameReference<PixelAdventure>, CollisionCallbacks {
   final double offNeg;
   final double offPos;
   Chicken({super.position, super.size, this.offNeg = 0.0, this.offPos = 0.0});
@@ -31,10 +33,13 @@ class Chicken extends SpriteAnimationGroupComponent
   Vector2 velocity = Vector2.zero();
   static const int runSpeed = 80;
 
+  bool gotStoped = false;
+  static const _bounceHeight = 260.0;
+
   @override
   FutureOr<void> onLoad() {
-    debugMode = true;
     player = game.player;
+    add(RectangleHitbox(position: Vector2(4, 6), size: Vector2(24, 26)));
     _loadAllAnimations();
     _calculateRange();
     return super.onLoad();
@@ -42,8 +47,10 @@ class Chicken extends SpriteAnimationGroupComponent
 
   @override
   void update(double dt) {
-    _updateState();
-    _movement(dt);
+    if (!gotStoped) {
+      _updateState();
+      _movement(dt);
+    }
     super.update(dt);
   }
 
@@ -106,6 +113,21 @@ class Chicken extends SpriteAnimationGroupComponent
     if ((moveDirection > 0 && scale.x > 0) ||
         (moveDirection < 0 && scale.x < 0)) {
       flipHorizontallyAroundCenter();
+    }
+  }
+
+  void collidedWithPlayer() async {
+    if (player.velocity.y > 0 && player.y + player.height > position.y) {
+      if (game.playSound) {
+        FlameAudio.play('bounce.wav', volume: game.soundVolume);
+      }
+      gotStoped = true;
+      current = ChickenState.hit;
+      player.velocity.y = -_bounceHeight;
+      await animationTicker?.completed;
+      removeFromParent();
+    } else {
+      player.collidedWithEnemy();
     }
   }
 }
