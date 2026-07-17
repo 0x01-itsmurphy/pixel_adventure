@@ -11,8 +11,8 @@
             "scale": 0.8416,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 332.6996197718631,
-                "y": 269.1302281368821
+                "x": 332.1055133079848,
+                "y": 268.53612167300383
             }
         },
         "Level-02.tmx": {
@@ -22,8 +22,16 @@
             "scale": 0.768,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 320.3125,
+                "x": 319.6614583333333,
                 "y": 316.40625
+            }
+        },
+        "Level-03.tmx": {
+            "scale": 0.9960156249999998,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 319.77409992940625,
+                "y": 183.73205741626793
             }
         },
         "Pixel Adventure.tsx": {
@@ -43,6 +51,7 @@
     "project": "Pixel Adventure.tiled-project",
     "property.type": "float",
     "recentFiles": [
+        "Level-02.tmx",
         "Level-01.tmx",
         "Pixel Adventure.tsx"
     ],
